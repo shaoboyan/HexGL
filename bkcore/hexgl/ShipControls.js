@@ -11,13 +11,13 @@ bkcore.hexgl = bkcore.hexgl || {};
 bkcore.hexgl.ShipControls = function(ctx)
 {
 	var self = this;
-	var domElement = ctx.document;
+	var domElement = ctx.controllerWindow ? ctx.controllerWindow.document : ctx.document;
 
 	this.active = true;
 	this.destroyed = false;
 	this.falling = false;
 
-	this.dom = domElement;
+	this.dom = ctx.document;
 	this.mesh = null;
 
 	this.epsilon = 0.00000001;

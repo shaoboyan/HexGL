@@ -137,6 +137,7 @@
 			<table id="titles-buttons">
 				<tr><td class="titles-button" id="s-quality" onclick="rollQuality();">QUALITY: SD</td></tr>
 				<tr><td class="titles-button" id="s-controls" onclick="rollControls();">CONTROLS: TOUCH</td></tr>
+				<tr style="display:none;" id="remote-display-row"><td class="titles-button" id="s-remote-display" onclick="rollRemoteDisplay();">REMOTE DISPLAY: OFF</td></tr>
 				<tr><td class="titles-button" onclick="init();">START</td></tr>
 			</table>
 		</div>
@@ -181,6 +182,8 @@
 
 		<script src="bkcore/hexgl/HexGL.js"></script>
 
+		<script src="fake_presentation_api.js"></script>
+
 		<script>
 			try {
 				var request = navigator.mozApps.getSelf();
@@ -207,7 +210,7 @@
 				};
 			}catch(e){
 				//TODO
-			}
+      }
 
 			var SCREEN_WIDTH = window.innerWidth;
 			var SCREEN_HEIGHT = window.innerHeight;
@@ -216,7 +219,7 @@
 
 			var hexGL;
 
-			var q = 0, qmax = 2, c = 1, cmax = 2;
+			var q = 1, qmax = 2, c = 1, cmax = 2;
 			var sq = ['SD', 'HD', 'ULTRA'];
 			var sc = ['NONE', 'TOUCH', 'MOTION'];
 
@@ -240,11 +243,25 @@
 				c++;
 				if(c > cmax) c = 1;
 				scontrols.innerHTML = "CONTROLS: " + sc[c];
-			}
+      }
+
+      function requestShowGameWindow() {
+         if (remoteDisplayMode && navigator.presentation.displayAvailable) {
+          navigator.presentation.requestShow("remoteView.html",
+            function(win) {
+              window.remoteGameWindow = win;
+              startRemoteGame();
+            },
+            function(error) {
+              console.error("failed to show: " + error.name);
+            });
+        }
+     }
 
 			function init() {
 				titles.style.display = "none";
-				this['controls'+c].style.display = "block";
+        this['controls'+c].style.display = "block";
+        requestShowGameWindow();
 			}
 
 			function restart() {
@@ -253,7 +270,10 @@
 				location.reload(false);
 			}
 
-			function start() {
+      function start() {
+        if (remoteDisplayMode) {
+          return;
+        }
 
 				controls1.style.display = "none";
 				controls2.style.display = "none";
@@ -294,11 +314,69 @@
 						console.log("LOADED "+t+" : "+n+" ( "+p.loaded+" / "+p.total+" ).");
 					}
 				});
-			}
-			
-			//init();
+      }
 
-		</script>
+      //---------------------------------------------
+      // For wireless display mode
+      //---------------------------------------------
+      var remoteDisplayMode = false;
+      var	remoteDisplayElement = document.getElementById("s-remote-display");
+      var remoteGameWindow = null;
+
+      function toggleRemoteDisplayRow() {
+        var remoteDisplayElement_row = document.getElementById("remote-display-row");
+        if (navigator.presentation.displayAvailable) {
+          remoteDisplayElement_row.style.display = "table-row";
+        } else {
+          remoteDisplayElement_row.style.display = "none";
+        }
+      }
+
+      function displayAvailableChange() {
+        toggleRemoteDisplayRow();
+        if (!navigator.presentation.displayAvailable) {
+          if (remoteGameWindow != null) remoteGameWindow.close();
+          restart();
+        }
+      }
+
+      function setupRemoteDisplayMode() {
+        // setup wireless display usage
+        if (navigator.presentation) {
+          toggleRemoteDisplayRow();
+          navigator.presentation.addEventListener("displayavailablechange",
+          	                                      displayAvailableChange);
+        } else {
+          console.error("navigator.presentation is not supported");
+        }
+      }
+
+      function rollRemoteDisplay() {
+        if (remoteDisplayMode) {
+          remoteDisplayMode = false;
+          remoteDisplayElement.innerHTML = "REMOTE DISPLAY: " + "OFF";
+        } else {
+          remoteDisplayMode = true;
+          remoteDisplayElement.innerHTML = "REMOTE DISPLAY: " + "ON";
+        }
+      }
+
+      function startRemoteGame() {
+				var message = {"cmd": "start", "quality": q, "controlType": c };
+				remoteGameWindow.postMessage(JSON.stringify(message), "*");
+      }
+
+      window.addEventListener("message", function(event) {
+      	console.log("handle message from game window");
+      	var msg = event.data;
+      	if (msg == "loaded") {
+      		remoteGameWindow = event.source;
+      		startRemoteGame();
+      	}
+      }, false);
+
+      setupRemoteDisplayMode();
+    </script>
 
 	</body>
 </html>

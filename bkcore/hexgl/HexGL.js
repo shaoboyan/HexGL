@@ -37,6 +37,8 @@ bkcore.hexgl.HexGL = function(opts)
 
 	this.controlType = opts.controlType == undefined ? 1 : opts.controlType;
 
+	this.controllerWindow = opts.controllerWindow == undefined ? null : opts.controllerWindow;
+
 	if(this.half)
 	{
 		this.width /= 2;
