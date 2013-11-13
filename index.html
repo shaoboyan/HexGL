@@ -360,7 +360,7 @@
       }
 
       function startRemoteGame() {
-				var message = {"cmd": "start", "quality": q, "controlType": c };
+				var message = {"cmd": "start", "quality": q, "controlType": c, "touchableWidth": SCREEN_WIDTH};
 				remoteGameWindow.postMessage(JSON.stringify(message), "*");
       }
 

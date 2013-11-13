@@ -123,8 +123,9 @@ bkcore.hexgl.ShipControls = function(ctx)
 
 	if(ctx.controlType == 1 && bkcore.controllers.TouchController.isCompatible())
 	{
+		touchWidth = ctx.controllerWindow ? window.touchableWidth : ctx.width;
 		this.touchController = new bkcore.controllers.TouchController(
-			domElement, ctx.width/2, 
+			domElement, touchWidth/2,
 			function(state, touch, event){
 				if(event.touches.length >= 4)
 					window.location.reload(false);
