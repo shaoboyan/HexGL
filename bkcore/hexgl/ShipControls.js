@@ -279,8 +279,8 @@ bkcore.hexgl.ShipControls.prototype.update = function(dt)
 	}
 	if(this.orientationController != null)
 	{
-		angularAmount -= this.orientationController.gamma/45 * this.angularSpeed * dt;
-		rollAmount += this.orientationController.gamma/45 * this.rollAngle;
+		angularAmount -= this.orientationController.beta/45 * this.angularSpeed * dt;
+		rollAmount += this.orientationController.beta/45 * this.rollAngle;
 	}
 
 	if(this.key.forward)
