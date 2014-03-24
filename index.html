@@ -135,7 +135,7 @@
 		<div id="titles">
 			<div id="titles-logo"><div>HexGL</div></div>
 			<table id="titles-buttons">
-				<tr><td class="titles-button" id="s-quality" onclick="rollQuality();">QUALITY: HD</td></tr>
+				<tr><td class="titles-button" id="s-quality" onclick="rollQuality();">QUALITY: ULTRA</td></tr>
 				<tr><td class="titles-button" id="s-controls" onclick="rollControls();">CONTROLS: TOUCH</td></tr>
 				<tr style="display:none;" id="remote-display-row"><td class="titles-button" id="s-remote-display" onclick="rollRemoteDisplay();">REMOTE DISPLAY: OFF</td></tr>
 				<tr><td class="titles-button" onclick="init();">START</td></tr>
@@ -217,7 +217,7 @@
 
 			var hexGL;
 
-			var q = 1, qmax = 2, c = 1, cmax = 2;
+			var q = 2, qmax = 2, c = 1, cmax = 2;
 			var sq = ['SD', 'HD', 'ULTRA'];
 			var sc = ['NONE', 'TOUCH', 'MOTION'];
 
@@ -290,7 +290,7 @@
 					gameover: gameover,
 					quality: quality,
 					track: 'Cityscape',
-					hud: false,
+					hud: true,
 					half: half,
 					mobile: true,
 					controlType: c,
