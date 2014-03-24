@@ -136,7 +136,7 @@
 			<div id="titles-logo"><div>HexGL</div></div>
 			<table id="titles-buttons">
 				<tr><td class="titles-button" id="s-quality" onclick="rollQuality();">QUALITY: ULTRA</td></tr>
-				<tr><td class="titles-button" id="s-controls" onclick="rollControls();">CONTROLS: TOUCH</td></tr>
+				<tr><td class="titles-button" id="s-controls" onclick="rollControls();">CONTROLS: MOTION</td></tr>
 				<tr style="display:none;" id="remote-display-row"><td class="titles-button" id="s-remote-display" onclick="rollRemoteDisplay();">REMOTE DISPLAY: OFF</td></tr>
 				<tr><td class="titles-button" onclick="init();">START</td></tr>
 			</table>
@@ -217,7 +217,7 @@
 
 			var hexGL;
 
-			var q = 2, qmax = 2, c = 1, cmax = 2;
+			var q = 2/*ULTRA*/, qmax = 2, c = 2 /*MOTION*/, cmax = 2;
 			var sq = ['SD', 'HD', 'ULTRA'];
 			var sc = ['NONE', 'TOUCH', 'MOTION'];
 
