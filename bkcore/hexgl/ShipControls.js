@@ -279,8 +279,17 @@ bkcore.hexgl.ShipControls.prototype.update = function(dt)
 	}
 	if(this.orientationController != null)
 	{
-		angularAmount -= this.orientationController.beta/45 * this.angularSpeed * dt;
-		rollAmount += this.orientationController.beta/45 * this.rollAngle;
+    // A workaround to determine the device is a phone or a tablet.
+    if (screen.availWidth >= 1024) {
+      // on a tablet
+		  angularAmount -= this.orientationController.gamma/45 * this.angularSpeed * dt;
+		  rollAmount += this.orientationController.gamma/45 * this.rollAngle;
+    }
+    else {
+      // on a phone
+      angularAmount -= this.orientationController.beta/45 * this.airAngularSpeed * dt;
+		  rollAmount += this.orientationController.beta/45 * this.rollAngle;
+    }
 	}
 
 	if(this.key.forward)
