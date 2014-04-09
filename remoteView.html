@@ -108,7 +108,7 @@
 
 			var container;
 			var hexGL;
-			var q = 0, c = 1;
+			var q = 2, c = 1;
 
 			var	gameover = document.getElementById("over");
 			var	loading = document.getElementById("loading");
@@ -166,7 +166,7 @@
 					return;
         }
 				if (msg.cmd == "start") {
-				  q = msg.quality;
+				  q = 2;
 				  c = msg.controlType;
 				  window.touchableWidth = msg.touchableWidth;
 				  start();
