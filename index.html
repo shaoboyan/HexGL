@@ -138,7 +138,7 @@
 			<table id="titles-buttons">
 				<tr><td class="titles-button" id="s-quality" onclick="rollQuality();">QUALITY: ULTRA</td></tr>
 				<tr><td class="titles-button" id="s-controls" onclick="rollControls();">CONTROLS: MOTION</td></tr>
-				<tr style="display:none;" id="remote-display-row"><td class="titles-button" id="s-remote-display" onclick="rollRemoteDisplay();">REMOTE DISPLAY: OFF</td></tr>
+				<tr style="display:none;" id="remote-display-row"><td class="titles-button" id="s-remote-display" onclick="rollRemoteDisplay();">REMOTE DISPLAY: ON</td></tr>
 				<tr><td class="titles-button" onclick="init();">START</td></tr>
 			</table>
 		</div>
@@ -318,7 +318,7 @@
       //---------------------------------------------
       // For wireless display mode
       //---------------------------------------------
-      var remoteDisplayMode = false;
+      var remoteDisplayMode = true;
       var	remoteDisplayElement = document.getElementById("s-remote-display");
       var remoteGameWindow = null;
 
