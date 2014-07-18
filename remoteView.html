@@ -3,7 +3,7 @@
 	<head>
 		<title>HexGL</title>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<link rel="stylesheet" href="css/fonts.css" type="text/css" charset="utf-8">
 		<link rel="icon" href="/icon_256.png" type="image/png">
 		<link rel="shortcut icon" href="/icon_256.png" type="image/png">
@@ -103,8 +103,8 @@
 		<script src="bkcore/hexgl/HexGL.js"></script>
 
 		<script>
-			var SCREEN_WIDTH = window.innerWidth;
-			var SCREEN_HEIGHT = window.innerHeight;
+			var SCREEN_WIDTH = window.innerWidth * window.devicePixelRatio;
+			var SCREEN_HEIGHT = window.innerHeight * window.devicePixelRatio;
 
 			var container;
 			var hexGL;
@@ -166,7 +166,7 @@
 					return;
         }
 				if (msg.cmd == "start") {
-				  q = 2;
+				  q = msg.quality;
 				  c = msg.controlType;
 				  window.touchableWidth = msg.touchableWidth;
 				  start();
