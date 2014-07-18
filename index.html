@@ -365,6 +365,11 @@
 				remoteGameWindow.postMessage(JSON.stringify(message), "*");
       }
 
+      function stopRemoteGame() {
+        var message = {"cmd": "stop" };
+        remoteGameWindow.postMessage(JSON.stringify(message), "*");
+      }
+
       window.addEventListener("message", function(event) {
       	console.log("handle message from game window");
       	var msg = event.data;
@@ -373,6 +378,10 @@
       		startRemoteGame();
       	}
       }, false);
+
+      document.body.onunload = function() {
+        stopRemoteGame();
+      };
 
       setupRemoteDisplayMode();
     </script>

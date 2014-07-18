@@ -170,7 +170,10 @@
 				  c = msg.controlType;
 				  window.touchableWidth = msg.touchableWidth;
 				  start();
-				}
+        }
+        if (msg.cmd == "stop") {
+          window.close();
+        }
       }
 
       window.addEventListener("message", receiveMessage, false);
