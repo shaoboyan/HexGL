@@ -318,7 +318,7 @@
       //---------------------------------------------
       // For wireless display mode
       //---------------------------------------------
-      var remoteDisplayMode = true;
+      var remoteDisplayMode = navigator.presentation.displayAvailable ? true : false;
       var	remoteDisplayElement = document.getElementById("s-remote-display");
       var remoteGameWindow = null;
 
