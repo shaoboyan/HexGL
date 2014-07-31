@@ -4,23 +4,55 @@ bkcore.hexgl = bkcore.hexgl || {};
 sources = [
     "sounds/engine.wav",
     "sounds/crash.wav",
-    "sounds/background.wav",
     "sounds/countdown.wav"
 ];
+
+backgroundSound = "sounds/background.ogg";
+
 bkcore.hexgl.Audio = function()
 {
-    this.background = null;
     this.engine = null;
     this.crashSoundBuffer = null;
     this.countdownSoundBuffer = null;
+    this.background = new Audio(backgroundSound);
 
+    var hidden, visibilityChange;
+
+    if (typeof document.hidden !== "undefined") {
+        hidden = "hidden";
+        visibilityChange = "visibilitychange";
+    } else if (typeof document.mozHidden !== "undefined") {
+        hidden = "mozHidden";
+        visibilityChange = "mozvisibilitychange";
+    } else if (typeof document.msHidden !== "undefined") {
+        hidden = "msHidden";
+        visibilityChange = "msvisibilitychange";
+    } else if (typeof document.webkitHidden !== "undefined") {
+        hidden = "webkitHidden";
+        visibilityChange = "webkitvisibilitychange";
+    }
+
+    var self = this;
+    if (visibilityChange != "undefined") {
+        document.addEventListener(
+            visibilityChange,
+            function() {
+                if (document[hidden]) {
+                    self.background.pause();
+                }
+                else {
+                    self.background.play();
+                }
+            },
+            false
+        );
+    }
     var AudioContext = window.AudioContext || window.webkitAudioContext;
     if (AudioContext) {
         this.context = new AudioContext();
         this.master = this.context.createGain();
         this.master.connect(this.context.destination);
 
-        this.background = this.context.createBufferSource();
         this.engine = this.context.createBufferSource();
     }
 
@@ -55,8 +87,6 @@ bkcore.hexgl.Audio.prototype.load = function()
             case 1:
                 self.crashSoundBuffer = buffer; break;
             case 2:
-                self.background.buffer = buffer; break;
-            case 3:
                 self.countdownSoundBuffer = buffer; break;
         }
         index++;
@@ -72,12 +102,7 @@ bkcore.hexgl.Audio.prototype.load = function()
 bkcore.hexgl.Audio.prototype.startBackground = function()
 {
     this.background.loop = true;
-    var gain = this.context.createGain();
-    gain.gain.value = 1;
-    this.background.connect(gain);
-    gain.connect(this.master);
-    this.background.playbackRate.value = 2;
-    this.background.start(0);
+    this.background.play();
 }
 
 bkcore.hexgl.Audio.prototype.playCrash = function()
