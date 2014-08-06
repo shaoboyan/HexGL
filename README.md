@@ -34,6 +34,6 @@ Feel free to post issues, patch or anything to make the game better.
 1. Download Crosswalk Runtime from https://download.01.org/crosswalk/releases/crosswalk/android/stable/6.35.131.13/crosswalk-6.35.131.13.zip
 2. Unzip the downloaded zip, and run the command:
 
-  python make_apk.py --name=HexGLDemo --icon=/path/to/HexGL/icon_64.png --package=org.xwalk.hexgldemo --xwalk-command-line=”--ignore-gpu-blacklist” --orientation=landscape --enable-remote-debugging --app-root=/path/to/HexGL --app-local-path=index.html
+  python make_apk.py --name=HexGLDemo --icon=/path/to/HexGL/icon_64.png --package=org.xwalk.hexgldemo --xwalk-command-line="-ignore-gpu-blacklist" --orientation=landscape --enable-remote-debugging --app-root=/path/to/HexGL --app-local-path=index.html
 
 3. On success, you will HexGLDemo_arm.apk file in the crosswalk directory.
