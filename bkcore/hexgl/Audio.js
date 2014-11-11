@@ -7,7 +7,7 @@ sources = [
     "sounds/countdown.wav"
 ];
 
-backgroundSound = "sounds/background.ogg";
+backgroundSound = "sounds/background.mp3";
 
 bkcore.hexgl.Audio = function()
 {
