@@ -22,7 +22,7 @@ bkcore.hexgl.HexGL = function(opts)
 	this.mobile = opts.mobile == undefined ? false : opts.mobile;
 	this.active = true;
 	this.displayHUD = opts.hud == undefined ? true : opts.hud;
-	this.width = opts.width == undefined ? window.innerWidth : opts.width;
+	this.width = opts.width == undefined ? window.innerWidth/2 : opts.width/2;
 	this.height = opts.height == undefined ? window.innerHeight : opts.height;
 
 	this.quality = opts.quality == undefined ? 2 : opts.quality;
@@ -47,7 +47,9 @@ bkcore.hexgl.HexGL = function(opts)
 
 	this.settings = null;
 	this.renderer = null;
+  this.rendererR = null;
 	this.manager = null;
+  this.managerR = null;
 	this.lib = null;
 	this.materials = {};
 	this.components = {};
@@ -70,7 +72,8 @@ bkcore.hexgl.HexGL = function(opts)
 	this.gameplay = null;
 
 	this.composers = {
-		game: null
+		game: null,
+    gameR: null
 	};
 
 	this.initRenderer();
@@ -90,7 +93,7 @@ bkcore.hexgl.HexGL.prototype.start = function()
 {
 
 	this.manager.setCurrent("game");
-
+  this.managerR.setCurrent("game");
 	var self = this;
 
 	function raf()
@@ -127,6 +130,7 @@ bkcore.hexgl.HexGL.prototype.update = function()
 		this.gameplay.update();
 
 	this.manager.renderCurrent();
+  this.managerR.renderCurrent();
 
     var rate = 1 + this.components.shipControls.getRealSpeedRatio() * 4;
     bkcore.hexgl.audio.powerVehicleEngine(rate);
@@ -277,25 +281,36 @@ bkcore.hexgl.HexGL.prototype.initRenderer = function()
 		clearColor: 0x000000
 	});
 
+  var rendererR = new THREE.WebGLRenderer({
+    antialias: false,
+    clearColor: 0x000000
+  });
 
 	if(this.quality > 0 && !this.mobile)
 	{
-		renderer.physicallyBasedShading = true;
-		renderer.gammaInput = true;
-		renderer.gammaOutput = true;
-		renderer.shadowMapEnabled = true;
-		renderer.shadowMapSoft = true;
+		rendererR.physicallyBasedShading = renderer.physicallyBasedShading = true;
+		rendererR.gammaInput = renderer.gammaInput = true;
+		rendererR.gammaOutput = renderer.gammaOutput = true;
+		rendererR.shadowMapEnabled = renderer.shadowMapEnabled = true;
+		rendererR.shadowMapSoft = renderer.shadowMapSoft = true;
 	}
 
-	renderer.autoClear = false;
-	renderer.sortObjects = false;
-	renderer.setSize( this.width, this.height );
+	rendererR.autoClear = renderer.autoClear = false;
+	rendererR.sortObjects = renderer.sortObjects = false;
+	rendererR.setSize(this.width, this.height);
+  renderer.setSize( this.width, this.height );
 	renderer.domElement.style.position = "relative";
+  rendererR.domElement.style.position = "relative";
+  rendererR.domElement.style.left = "50%";
 
-	this.containers.main.appendChild( renderer.domElement );	
+	this.containers.main.appendChild( renderer.domElement );
+  this.containers.main.appendChild( rendererR.domElement );
 	this.canvas = renderer.domElement;
+  this.canvasR = rendererR.domElement;
 	this.renderer = renderer;
+  this.rendererR = rendererR;
 	this.manager = new bkcore.threejs.RenderManager(renderer);
+  this.managerR = new bkcore.threejs.RenderManager(rendererR);
 }
 
 bkcore.hexgl.HexGL.prototype.initHUD = function()
@@ -316,14 +331,19 @@ bkcore.hexgl.HexGL.prototype.initGameComposer = function()
 {
 	var renderTargetParameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat, stencilBuffer: false };
 	var renderTarget = new THREE.WebGLRenderTarget( this.width, this.height, renderTargetParameters );
+  var renderTargetR = new THREE.WebGLRenderTarget( this.width, this.height, renderTargetParameters );
 
 	// GAME COMPOSER	
 	var renderSky = new THREE.RenderPass( this.manager.get("sky").scene, this.manager.get("sky").camera );
+  var renderSkyR = new THREE.RenderPass( this.managerR.get("sky").scene, this.managerR.get("sky").camera );
 
 	var renderModel = new THREE.RenderPass( this.manager.get("game").scene, this.manager.get("game").camera );
+  var renderModelR = new THREE.RenderPass( this.managerR.get("game").scene, this.managerR.get("game").camera );
+  renderModelR.clear = false;
 	renderModel.clear = false;
 
 	this.composers.game = new THREE.EffectComposer( this.renderer, renderTarget );
+  this.composers.gameR = new THREE.EffectComposer(this.rendererR, renderTargetR);
 
 	var effectScreen = new THREE.ShaderPass( THREE.ShaderExtras[ "screen" ] );	
 	effectScreen.renderToScreen = true;			
@@ -340,6 +360,8 @@ bkcore.hexgl.HexGL.prototype.initGameComposer = function()
 
 	this.composers.game.addPass( renderSky );
 	this.composers.game.addPass( renderModel );
+  this.composers.gameR.addPass( renderSkyR);
+  this.composers.gameR.addPass( renderModelR);
 
 	if(this.quality > 0 && !this.mobile)
 	{
@@ -347,6 +369,7 @@ bkcore.hexgl.HexGL.prototype.initGameComposer = function()
 		effectFXAA.uniforms[ 'resolution' ].value.set( 1 / this.width, 1 / this.height );
 
 		this.composers.game.addPass( effectFXAA );
+
 		
 		this.extras.fxaa = effectFXAA;
 	}
@@ -356,13 +379,18 @@ bkcore.hexgl.HexGL.prototype.initGameComposer = function()
 
 		this.composers.game.addPass( effectBloom );
 
+    this.composers.gameR.addPass(effectBloom);
+
 		this.extras.bloom = effectBloom;
 	}
 
-	if(!this.mobile || this.quality > 0)
+	if(!this.mobile || this.quality > 0) {
 		this.composers.game.addPass( effectHex );
-	else
+    this.composers.gameR.addPass( effectHex);}
+	else {
 		this.composers.game.addPass( effectScreen );
+    this.composers.gameR.addPass( effectScreen );
+  }
 
 	
 }
@@ -387,45 +415,46 @@ bkcore.hexgl.HexGL.prototype.createMesh = function(parent, geometry, x, y, z, ma
 bkcore.hexgl.HexGL.prototype.tweakShipControls = function()
 {
 	var c = this.components.shipControls;
+  var d = this.components.shipControlsR;
 	if(this.difficulty == 1)
 	{
-		c.airResist = 0.035;
-		c.airDrift = 0.07;
-		c.thrust = 0.035;
-		c.airBrake = 0.04;
-		c.maxSpeed = 9.6;
-		c.boosterSpeed = c.maxSpeed * 0.35;
-		c.boosterDecay = 0.007;
-		c.angularSpeed = 0.0140;
-		c.airAngularSpeed = 0.0165;
-		c.rollAngle = 0.6;
-		c.shieldDamage = 0.03;
-		c.collisionSpeedDecrease = 0.8;
-		c.collisionSpeedDecreaseCoef = 0.5;
-		c.rollLerp = 0.1;
-		c.driftLerp = 0.4;
-		c.angularLerp = 0.4;
+		d.airResist = c.airResist = 0.035;
+		d.airDrift = c.airDrift = 0.07;
+		d.thrust = c.thrust = 0.035;
+		d.airBrake = c.airBrake = 0.04;
+		d.maxSpeed = c.maxSpeed = 9.6;
+		d.boosterSpeed = c.boosterSpeed = c.maxSpeed * 0.35;
+		d.boosterDecay = c.boosterDecay = 0.007;
+		d.angularSpeed = c.angularSpeed = 0.0140;
+		d.airAngularSpeed = c.airAngularSpeed = 0.0165;
+		d.rollAngle = c.rollAngle = 0.6;
+		d.shieldDamage = c.shieldDamage = 0.03;
+		d.collisionSpeedDecrease = c.collisionSpeedDecrease = 0.8;
+		d.collisionSpeedDecreaseCoef = c.collisionSpeedDecreaseCoef = 0.5;
+		d.rollLerp = c.rollLerp = 0.1;
+		d.driftLerp = c.driftLerp = 0.4;
+		d.angularLerp = c.angularLerp = 0.4;
 	}
 	else if(this.difficulty == 0)
 	{
-		c.airResist = 0.02;
-		c.airDrift = 0.06;
-		c.thrust = 0.02;
-		c.airBrake = 0.025;
-		c.maxSpeed = 7.0;
-		c.boosterSpeed = c.maxSpeed * 0.5;
-		c.boosterDecay = 0.007;
-		c.angularSpeed = 0.0125;
-		c.airAngularSpeed = 0.0135;
-		c.rollAngle = 0.6;
-		c.shieldDamage = 0.06;
-		c.collisionSpeedDecrease = 0.8;
-		c.collisionSpeedDecreaseCoef = 0.5;
-		c.rollLerp = 0.07;
-		c.driftLerp = 0.3;
-		c.angularLerp = 0.4;
+		d.airResist = c.airResist = 0.02;
+		d.airDrift = c.airDrift = 0.06;
+		d.thrust = c.thrust = 0.02;
+		d.airBrake = c.airBrake = 0.025;
+		d.maxSpeed = c.maxSpeed = 7.0;
+		d.boosterSpeed = c.boosterSpeed = c.maxSpeed * 0.5;
+		d.boosterDecay = c.boosterDecay = 0.007;
+		d.angularSpeed = c.angularSpeed = 0.0125;
+		d.airAngularSpeed = c.airAngularSpeed = 0.0135;
+		d.rollAngle = c.rollAngle = 0.6;
+		d.shieldDamage = c.shieldDamage = 0.06;
+		d.collistionSpeedDecrease = c.collisionSpeedDecrease = 0.8;
+		d.collisionSpeedDecreaseCoef = c.collisionSpeedDecreaseCoef = 0.5;
+		d.rollLerp = c.rollLerp = 0.07;
+		d.driftLerp = c.driftLerp = 0.3;
+		d.angularLerp = c.angularLerp = 0.4;
 	}
 
 	if(this.godmode)
-		c.shieldDamage = 0.0;
+		d.shieldDamage = c.shieldDamage = 0.0;
 }

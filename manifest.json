@@ -2,6 +2,8 @@
 	"name": "HexGL",
 	"description": "HexGL v1.0.1-ffos",
 	"launch_path": "/index.html",
+  "start_url" : "index.html",
+  "xwalk_package_id" : "org.xwalk.hexgldemo",
 	"icons": {
 		"32": "/icon_32.png",
 		"64": "/icon_64.png",

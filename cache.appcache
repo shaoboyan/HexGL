@@ -13,6 +13,7 @@ css/mobile-controls-1.jpg
 css/mobile.jpg
 css/touchcontroller.css
 libs/Three.dev.js
+libs/StereoEffect.js
 libs/ShaderExtras.js
 libs/postprocessing/EffectComposer.js
 libs/postprocessing/RenderPass.js

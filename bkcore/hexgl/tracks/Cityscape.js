@@ -275,36 +275,59 @@ bkcore.hexgl.tracks.Cityscape = {
 
 		// SKYBOX
 		var sceneCube = new THREE.Scene();
+    var sceneCubeR = new THREE.Scene();
 
 		var cameraCube = new THREE.PerspectiveCamera( 70, ctx.width / ctx.height, 1, 6000 );
+    var cameraCubeR = new THREE.PerspectiveCamera(70, ctx.width / ctx.height, 1, 6000 );
 		sceneCube.add( cameraCube );
-
+    sceneCubeR.add( cameraCubeR );
+//TODO: continue deal with these problems
 		var skyshader = THREE.ShaderUtils.lib[ "cube" ];
-		skyshader.uniforms[ "tCube" ].texture = this.lib.get("texturesCube", "skybox.dawnclouds");
+    var uniforms = THREE.UniformsUtils.clone(skyshader.uniforms);
+    var uniformsR = THREE.UniformsUtils.clone(skyshader.uniforms);
+    uniforms["tCube"].texture = this.lib.get("texturesCube", "skybox.dawnclouds");
+    uniformsR["tCube"].texture = this.lib.get("texturesCube", "skybox.dawnclouds");
+    var skyshaderR = THREE.ShaderUtils.lib[ "cube" ];
+		//skyshader.uniforms[ "tCube" ].texture = this.lib.get("texturesCube", "skybox.dawnclouds");
+    //skyshaderR.uniforms["tCube"].texture= this.lib.get("texturesCube", "skybox.dawnclouds");
 
 		var skymaterial = new THREE.ShaderMaterial(
 		{
 			fragmentShader: skyshader.fragmentShader,
 			vertexShader: skyshader.vertexShader,
-			uniforms: skyshader.uniforms,
+			uniforms: uniforms, //skyshader.uniforms,
 			depthWrite: false
 		});
+    var skymaterialR = new THREE.ShaderMaterial(
+    {
+      fragmentShader: skyshaderR.fragmentShader,
+      vertexShader: skyshaderR.vertexShader,
+      uniformsR: uniformsR,//skyshaderR.uniforms,
+      depthWrite: false
+    });
 
 		var mesh = new THREE.Mesh( new THREE.CubeGeometry( 100, 100, 100 ), skymaterial );
+    var meshR = new THREE.Mesh(new THREE.CubeGeometry( 100, 100, 100 ), skymaterialR );
+    meshR.flipSided = true;
 		mesh.flipSided = true;
 
 		sceneCube.add(mesh);
+    sceneCubeR.add(meshR);
 
 		ctx.manager.add("sky", sceneCube, cameraCube);
+    ctx.managerR.add("sky", sceneCubeR, cameraCubeR);
 
 		var ambient = 0xbbbbbb, diffuse = 0xffffff, specular = 0xffffff, shininess = 42, scale = 23;
 
 		// MAIN SCENE		
 		var camera = new THREE.PerspectiveCamera( 70, ctx.width / ctx.height, 1, 60000 );
-		
+    var cameraR = new THREE.PerspectiveCamera(70, ctx.width / ctx.height, 1, 60000 );
 		var scene = new THREE.Scene();
+    var sceneR = new THREE.Scene();
 		scene.add( camera );
+    sceneR.add( cameraR );
 		scene.add( new THREE.AmbientLight( ambient ) );
+    sceneR.add( new THREE.AmbientLight( ambient) );
 
 		// SUN
 		var sun = new THREE.DirectionalLight( diffuse, 1.5, 30000 );
@@ -327,12 +350,14 @@ bkcore.hexgl.tracks.Cityscape = {
 			sun.shadowMapHeight = 2048;
 		}
 		scene.add( sun );
-
+    sceneR.add( sun );
 		// SHIP
 		var ship = ctx.createMesh(scene, this.lib.get("geometries", "ship.feisar"), -1134*2, 10, -443*2, this.materials.ship);
-		
+	  var shipR = ctx.createMesh(sceneR, this.lib.get("geometries", "ship.feisar"), -1134*2, 10, -443*2, this.materials.ship);
 		var booster = ctx.createMesh(ship, this.lib.get("geometries", "booster"), 0, 0.665, -3.8, this.materials.booster);
+    var boosterR = ctx.createMesh(shipR, this.lib.get("geometries", "booster"), 0, 0.665, -3.8, this.materials.booster);
 		booster.depthWrite = false;
+    boosterR.depthWrite = false;
 
 		var boosterSprite = new THREE.Sprite({ 
 			map: this.lib.get("textures", "booster.sprite"), 
@@ -340,14 +365,28 @@ bkcore.hexgl.tracks.Cityscape = {
 			useScreenCoordinates: false, 
 			color: 0xffffff 
 		});
+    var boosterSpriteR = new THREE.Sprite({
+      map: this.lib.get("textures", "booster.sprite"),
+      blending: THREE.AdditiveBlending,
+      useScreenCoordinates: false,
+      color: 0xffffff
+    });
 		boosterSprite.scale.set(0.02, 0.02, 0.02);
 		boosterSprite.mergeWith3D = false;
 		booster.add(boosterSprite);
 
+    boosterSpriteR.scale.set(0.02, 0.02, 0.02);
+    boosterSpriteR.mergeWith3D = false;
+    boosterR.add(boosterSpriteR);
+
 		var boosterLight = new THREE.PointLight(0x00a2ff, 4.0, 60);
 		boosterLight.position.set(0, 0.665, -4);
-		if(quality > 0)
+    var boosterLightR = new THREE.PointLight(0x00a2ff, 4.0, 60);
+    boosterLightR.position.set(0,0.665, -4);
+		if(quality > 0) {
 			ship.add(boosterLight);
+      shipR.add(boosterLightR);
+    }
 
 		// SHIP CONTROLS
 		var shipControls = new bkcore.hexgl.ShipControls(ctx);
@@ -360,6 +399,18 @@ bkcore.hexgl.tracks.Cityscape = {
 		shipControls.heightScale = 10.0;
 		shipControls.control(ship);
 		ctx.components.shipControls = shipControls;
+		//ctx.tweakShipControls();
+    
+    var shipControlsR = new bkcore.hexgl.ShipControls(ctx);
+		shipControlsR.collisionMap = this.lib.get("analysers", "track.cityscape.collision");
+		shipControlsR.collisionPixelRatio = 2048.0 / 6000.0;
+		shipControlsR.collisionDetection = true;
+		shipControlsR.heightMap = this.lib.get("analysers", "track.cityscape.height");;
+		shipControlsR.heightPixelRatio = 2048.0 / 6000.0;
+		shipControlsR.heightBias = 4.0;
+		shipControlsR.heightScale = 10.0;
+		shipControlsR.control(ship);
+		ctx.components.shipControlsR = shipControlsR;
 		ctx.tweakShipControls();
 
 		// SHIP EFFECTS AND PARTICLES
@@ -371,24 +422,47 @@ bkcore.hexgl.tracks.Cityscape = {
 			boosterLight: boosterLight,
 			useParticles: false
 		};
+    var fxParamsR = {
+      scene: sceneR,
+      shipControls: shipControlsR,
+      booster: boosterR,
+      boosterSprite: boosterSpriteR,
+      boosterLight: boosterLightR,
+      useParticles: false
+    };
+
 		if(quality > 0 && !mobile)
 		{
 			fxParams.textureCloud = this.lib.get("textures", "cloud");
 			fxParams.textureSpark = this.lib.get("textures", "spark");
 			fxParams.useParticles = true;
+      fxParamsR.textureCloud = this.lib.get("textures", "cloud");
+      fxParamsR.textureSpark = this.lib.get("textures", "spark");
+      fxParamsR.useParticles = true;
 		}
 		ctx.components.shipEffects = new bkcore.hexgl.ShipEffects(fxParams);
+    ctx.components.shipEffectsR = new bkcore.hexgl.ShipEffects(fxParamsR);
 
 		// TRACK
 		var track = ctx.createMesh(scene, this.lib.get("geometries", "track.cityscape"), 0, -5, 0, this.materials.track);
+    var trackR = ctx.createMesh(sceneR, this.lib.get("geometries", "track.cityscape"), 0, -5, 0, this.materials.track);
 		var bonusBase = ctx.createMesh(scene, this.lib.get("geometries", "bonus.base"), 0, -5, 0, this.materials.bonusBase);
+		var bonusBaseR = ctx.createMesh(sceneR, this.lib.get("geometries", "bonus.base"), 0, -5, 0, this.materials.bonusBase);
 		var bonusSpeed = ctx.createMesh(scene, this.lib.get("geometries", "track.cityscape.bonus.speed"), 0, -5, 0, this.materials.bonusSpeed);
-		bonusSpeed.receiveShadow = false;
+		var bonusSpeedR = ctx.createMesh(sceneR, this.lib.get("geometries", "track.cityscape.bonus.speed"), 0, -5, 0, this.materials.bonusSpeed);
+		
+    bonusSpeed.receiveShadow = false;
+    bonusSpeedR.receiveShadow = false;
 		var scrapers1 = ctx.createMesh(scene, this.lib.get("geometries", "track.cityscape.scrapers1"), 0, 0, 0, this.materials.scrapers1);
+		var scrapers1R = ctx.createMesh(sceneR, this.lib.get("geometries", "track.cityscape.scrapers1"), 0, 0, 0, this.materials.scrapers1);
 		var scrapers2 = ctx.createMesh(scene, this.lib.get("geometries", "track.cityscape.scrapers2"), 0, 0, 0, this.materials.scrapers2);
+		var scrapers2R = ctx.createMesh(sceneR, this.lib.get("geometries", "track.cityscape.scrapers2"), 0, 0, 0, this.materials.scrapers2);
 		var start = ctx.createMesh(scene, this.lib.get("geometries", "track.cityscape.start"), 0, -5, 0, this.materials.start);
+		var startR = ctx.createMesh(sceneR, this.lib.get("geometries", "track.cityscape.start"), 0, -5, 0, this.materials.start);
 		var startbanner = ctx.createMesh(scene, this.lib.get("geometries", "track.cityscape.start.banner"), 0, -5, 0, this.materials.startBanner);
+		var startbannerR = ctx.createMesh(sceneR, this.lib.get("geometries", "track.cityscape.start.banner"), 0, -5, 0, this.materials.startBanner);
 		startbanner.doubleSided = true;
+    startbannerR.doubleSided = true;
 
 		// CAMERA
 		ctx.components.cameraChase = new bkcore.hexgl.CameraChase({
@@ -401,6 +475,15 @@ bkcore.hexgl.tracks.Cityscape = {
 			viewOffset: 10.0
 		});
 
+    ctx.components.cameraChaseR = new bkcore.hexgl.CameraChase({
+      target: shipR,
+      camera: cameraR,
+      cameraCube: ctx.managerR.get("sky").camera,
+      lerp: 0.5,
+      yoffset: 8.0,
+      zoffset: 10.0,
+      viewOffset: 10.0
+    });
 		ctx.manager.add("game", scene, camera, function(delta, renderer)
 		{
 			if(delta > 25 && this.objects.lowFPS < 1000) this.objects.lowFPS++;
@@ -443,5 +526,41 @@ bkcore.hexgl.tracks.Cityscape = {
 			time: 0.0,
 			lowFPS: 0
 		});
-	}
+  ctx.managerR.add("game", scene, camera, function(delta, renderer){
+			if(delta > 25 && this.objects.lowFPS < 1000) this.objects.lowFPS++;
+
+			var dt = delta/16.6;
+
+			this.objects.components.shipControls.update(dt);
+			
+			this.objects.components.shipEffectsR.update(dt);
+
+			this.objects.components.cameraChaseR.update(dt, this.objects.components.shipControls.getSpeedRatio());
+			/*this.objects.time += 0.002;
+			var c = this.objects.components.cameraChase.camera;
+			c.position.set(
+				Math.cos(this.objects.time)*15+this.objects.components.shipControls.dummy.position.x,
+				10+this.objects.components.shipControls.dummy.position.y,
+				Math.sin(this.objects.time)*15+this.objects.components.shipControls.dummy.position.z
+			);
+			c.lookAt(this.objects.components.shipControls.dummy.position);
+			this.objects.components.cameraChase.cameraCube.rotation.copy(c.rotation);*/
+
+			this.objects.composers.gameR.render(dt);
+			if(this.objects.components.shipControls.getShieldRatio() < 0.2)
+				this.objects.extras.vignetteColor.setHex(0x992020);
+			else
+				this.objects.extras.vignetteColor.setHex(0x458ab1);
+		},
+		{
+			components: ctx.components,
+			composers: ctx.composers,
+			extras: ctx.extras,
+			quality: quality,
+			hud: ctx.hud,
+			time: 0.0,
+			lowFPS: 0
+		});
+  }
+
 }

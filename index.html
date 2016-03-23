@@ -27,7 +27,7 @@
 			h1 {color: #666	; }
 			a { color:skyblue }
 			/*canvas { pointer-events:none; }*/
-			html, body, #main, #titles, #controls, #over, #loading, canvas { width: 100%; height: 100%;}
+      html, body, #main, #titles, #controls, #over, #loading, canvas { width: 50%; height: 100%;}
 			#overlay, #titles, #controls-1, #controls-2, #over, #loading {
 				position: absolute;
 				z-index: 1000;
@@ -150,7 +150,8 @@
 		<div id="overlay"></div>
 		<div id="main"></div>
 
-		<script src="libs/Three.dev.js"></script>
+    <script src="libs/Three.dev.js"></script>
+    <script src="libs/StereoEffect.js"></script>
 		<script src="libs/ShaderExtras.js"></script>
 		<script src="libs/postprocessing/EffectComposer.js"></script>
 		<script src="libs/postprocessing/RenderPass.js"></script>
