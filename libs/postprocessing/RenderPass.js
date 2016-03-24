@@ -18,14 +18,13 @@ THREE.RenderPass = function ( scene, camera, overrideMaterial, clearColor, clear
 	this.enabled = true;
 	this.clear = true;
 	this.needsSwap = false;
-
 	this.prePass = null;
 	this.postPass = null;
 };
 
 THREE.RenderPass.prototype = {
 
-	render: function ( renderer, writeBuffer, readBuffer, delta ) {
+	render: function ( renderer, writeBuffer, readBuffer, writeBuffer2, readBuffer2, delta, maskActive, width, height ) {
 
 		if( this.prePass )
 		{
@@ -42,8 +41,13 @@ THREE.RenderPass.prototype = {
 			renderer.setClearColor( this.clearColor, this.clearAlpha );
 
 		}
-
-		renderer.render( this.scene, this.camera, readBuffer, this.clear );
+    //renderer.setViewport(0,0, width, height);
+    //renderer.render( this.scene, this.camera, readBuffer, this.clear );
+    //renderer.setViewport(0,0, width/2, height);
+    //renderer.setViewport(width/2,0, width, height);
+    renderer.render( this.scene, this.camera, readBuffer, this.clear );
+    //renderer.setViewport(width/2,0, width/2, height);
+    //renderer.render(this.scene, this.camera, readBuffer2, this.clear);
 
 		if ( this.clearColor ) {
 

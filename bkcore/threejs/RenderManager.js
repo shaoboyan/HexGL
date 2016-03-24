@@ -62,10 +62,12 @@ bkcore.threejs = bkcore.threejs || {};
 	w.perfNow = perfNow;
 })(window);
 
-bkcore.threejs.RenderManager = function(renderer)
+bkcore.threejs.RenderManager = function(renderer, width, height)
 {
 	this.renderer = renderer;
 	this.time = window.perfNow();
+  this.width = width;
+  this.height = height;
 
 	this.renders = {};
 	this.current = {};
@@ -73,6 +75,7 @@ bkcore.threejs.RenderManager = function(renderer)
 
 	this.defaultRenderMethod = function(delta, renderer)
 	{
+    renderer.setViewport(0,0,this.width/ 2,this.height);
 		renderer.render(this.scene, this.camera);
 	};
 };

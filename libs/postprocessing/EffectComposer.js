@@ -2,11 +2,15 @@
  * @author alteredq / http://alteredqualia.com/
  */
 
-THREE.EffectComposer = function ( renderer, renderTarget ) {
+THREE.EffectComposer = function ( renderer, renderTarget, renderTarget3, width, height ) {
 
 	this.renderer = renderer;
 
 	this.renderTarget1 = renderTarget;
+ this.renderTarget3 = renderTarget3; 
+  this._width = width;
+
+  this._height = height;
 
 	if ( this.renderTarget1 === undefined ) {
 
@@ -19,9 +23,11 @@ THREE.EffectComposer = function ( renderer, renderTarget ) {
 	}
 
 	this.renderTarget2 = this.renderTarget1.clone();
-
+  this.renderTarget4 = this.renderTarget3.clone();
 	this.writeBuffer = this.renderTarget1;
 	this.readBuffer = this.renderTarget2;
+  this.writeBuffer2 = this.renderTarget3;
+  this.readBuffer2 = this.renderTarget4;
 
 	this.passes = [];
 
@@ -36,6 +42,9 @@ THREE.EffectComposer.prototype = {
 		var tmp = this.readBuffer;
 		this.readBuffer = this.writeBuffer;
 		this.writeBuffer = tmp;
+    tmp = this.readBuffer2;
+    this.readBuffer2 = this.writeBuffer2;
+    this.writeBuffer2 = tmp;
 
 	},
 
@@ -45,10 +54,12 @@ THREE.EffectComposer.prototype = {
 
 	},
 
-	render: function ( delta ) {
+	render: function ( delta) {
 
 		this.writeBuffer = this.renderTarget1;
 		this.readBuffer = this.renderTarget2;
+    this.writeBuffer2 = this.renderBuffer3;
+    this.readBuffer2 = this.renderBuffer4;
 
 		var maskActive = false;
 
@@ -60,7 +71,7 @@ THREE.EffectComposer.prototype = {
 
 			if ( !pass.enabled ) continue;
 
-			pass.render( this.renderer, this.writeBuffer, this.readBuffer, delta, maskActive );
+			pass.render( this.renderer, this.writeBuffer, this.readBuffer, this.writeBuffer2, this.readBuffer2, delta, maskActive, this._width, this._height );
 
 			if ( pass.needsSwap ) {
 
@@ -117,6 +128,20 @@ THREE.EffectComposer.prototype = {
 		THREE.EffectComposer.camera.bottom = window.innerHeight / - 2;
 
 		THREE.EffectComposer.camera.updateProjectionMatrix();
+		
+    THREE.EffectComposer.cameraL.left = window.innerWidth / - 2;
+		THREE.EffectComposer.cameraL.right = window.innerWidth / 2;
+		THREE.EffectComposer.cameraL.top = window.innerHeight / 2;
+		THREE.EffectComposer.cameraL.bottom = window.innerHeight / - 2;
+
+		THREE.EffectComposer.cameraL.updateProjectionMatrix();
+		
+    THREE.EffectComposer.cameraR.left = window.innerWidth / - 2;
+		THREE.EffectComposer.cameraR.right = window.innerWidth / 2;
+		THREE.EffectComposer.cameraR.top = window.innerHeight / 2;
+		THREE.EffectComposer.cameraR.bottom = window.innerHeight / - 2;
+
+		THREE.EffectComposer.cameraR.updateProjectionMatrix();
 
 	}
 
@@ -127,8 +152,16 @@ THREE.EffectComposer.prototype = {
 THREE.EffectComposer.initWidth = window.innerWidth || 1;
 THREE.EffectComposer.initHeight = window.innerHeight || 1;
 
-THREE.EffectComposer.camera = new THREE.OrthographicCamera( THREE.EffectComposer.initWidth / - 2, THREE.EffectComposer.initWidth / 2, THREE.EffectComposer.initHeight / 2, THREE.EffectComposer.initHeight / - 2, -10000, 10000 );
+THREE.EffectComposer.camera = new THREE.PerspectiveCamera( 90 ,THREE.EffectComposer.initWidth / THREE.EffectComposer.initHeight, 0.001, 700) ;
+THREE.EffectComposer.camera.position.z = 350;
+THREE.EffectComposer.cameraL = new THREE.PerspectiveCamera( 75 ,THREE.EffectComposer.initWidth / THREE.EffectComposer.initHeight, 1, 10000) ;
+THREE.EffectComposer.cameraL.position.z = 450;
+THREE.EffectComposer.cameraR = new THREE.PerspectiveCamera( 75 ,THREE.EffectComposer.initWidth / THREE.EffectComposer.initHeight, 1, 10000) ;
+THREE.EffectComposer.cameraR.position.z = 450;
 
+//THREE.EffectComposer.camera = new THREE.OrthographicCamera( THREE.EffectComposer.initWidth / - 2, THREE.EffectComposer.initWidth / 2, THREE.EffectComposer.initHeight / 2, THREE.EffectComposer.initHeight / - 2, -10000, 10000 );
+//THREE.EffectComposer.cameraL = new THREE.OrthographicCamera( THREE.EffectComposer.initWidth / - 2, THREE.EffectComposer.initWidth / 2, THREE.EffectComposer.initHeight / 2, THREE.EffectComposer.initHeight / - 2, -10000, 10000 );
+//THREE.EffectComposer.cameraR = new THREE.OrthographicCamera( THREE.EffectComposer.initWidth / - 2, THREE.EffectComposer.initWidth / 2, THREE.EffectComposer.initHeight / 2, THREE.EffectComposer.initHeight / - 2, -10000, 10000 );
 // shared fullscreen quad scene
 
 THREE.EffectComposer.geometry = new THREE.PlaneGeometry( 1, 1 );
@@ -141,3 +174,6 @@ THREE.EffectComposer.quad.scale.set( THREE.EffectComposer.initWidth, THREE.Effec
 THREE.EffectComposer.scene = new THREE.Scene();
 THREE.EffectComposer.scene.add( THREE.EffectComposer.quad );
 THREE.EffectComposer.scene.add( THREE.EffectComposer.camera );
+//THREE.EffectComposer.scene.add( THREE.EffectComposer.cameraL );
+//THREE.EffectComposer.scene.add( THREE.EffectComposer.cameraR );
+//THREE.EffectComposer.scene.add( THREE.EffectComposer.camera2 );

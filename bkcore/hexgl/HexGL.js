@@ -295,7 +295,7 @@ bkcore.hexgl.HexGL.prototype.initRenderer = function()
 	this.containers.main.appendChild( renderer.domElement );	
 	this.canvas = renderer.domElement;
 	this.renderer = renderer;
-	this.manager = new bkcore.threejs.RenderManager(renderer);
+	this.manager = new bkcore.threejs.RenderManager(renderer, this.width, this.height);
 }
 
 bkcore.hexgl.HexGL.prototype.initHUD = function()
@@ -316,20 +316,20 @@ bkcore.hexgl.HexGL.prototype.initGameComposer = function()
 {
 	var renderTargetParameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat, stencilBuffer: false };
 	var renderTarget = new THREE.WebGLRenderTarget( this.width, this.height, renderTargetParameters );
-
+  var renderTarget2 = new THREE.WebGLRenderTarget( this.width/2, this.height, renderTargetParameters );
 	// GAME COMPOSER	
 	var renderSky = new THREE.RenderPass( this.manager.get("sky").scene, this.manager.get("sky").camera );
 
 	var renderModel = new THREE.RenderPass( this.manager.get("game").scene, this.manager.get("game").camera );
 	renderModel.clear = false;
 
-	this.composers.game = new THREE.EffectComposer( this.renderer, renderTarget );
+	this.composers.game = new THREE.EffectComposer( this.renderer, renderTarget, renderTarget2, this.width, this.height );
 
 	var effectScreen = new THREE.ShaderPass( THREE.ShaderExtras[ "screen" ] );	
 	effectScreen.renderToScreen = true;			
 	var effectVignette = new THREE.ShaderPass( THREE.ShaderExtras[ "vignette" ] );
 
-	var effectHex = new THREE.ShaderPass( bkcore.threejs.Shaders[ "hexvignette" ] );
+	var effectHex = new THREE.ShaderPass( bkcore.threejs.Shaders[ "hexvignette" ], this.width, this.height );
 	effectHex.uniforms[ 'size' ].value = 512.0 * (this.width/1633);
 	effectHex.uniforms[ 'rx' ].value = this.width;
 	effectHex.uniforms[ 'ry' ].value = this.height;
