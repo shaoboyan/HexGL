@@ -150,7 +150,8 @@
 		<div id="overlay"></div>
 		<div id="main"></div>
 
-		<script src="libs/Three.dev.js"></script>
+    <script src="libs/Three.dev.js"></script>
+    <!--<script src="libs/Three.r53.js"></script>-->
 		<script src="libs/ShaderExtras.js"></script>
 		<script src="libs/postprocessing/EffectComposer.js"></script>
 		<script src="libs/postprocessing/RenderPass.js"></script>
@@ -159,7 +160,8 @@
 		<script src="libs/postprocessing/MaskPass.js"></script>
 		<script src="libs/Detector.js"></script>
 		<script src="libs/Stats.js"></script>
-		<script src="libs/DAT.GUI.min.js"></script>
+    <script src="libs/DAT.GUI.min.js"></script>
+    <script src="libs/DeviceOrientationControls.js"></script>
 
 		<script src="bkcore.coffee/controllers/TouchController.js"></script>
 		<script src="bkcore.coffee/controllers/OrientationController.js"></script>
@@ -230,7 +232,7 @@
 			var	gameover = document.getElementById("over");
 			var	controls1 = document.getElementById("controls-1");
 			var	controls2 = document.getElementById("controls-2");
-			var	controls3 = document.getElementById("controls-1");
+      var	controls3 = document.getElementById("controls-1");
 			var	squality = document.getElementById("s-quality");
 			var	scontrols = document.getElementById("s-controls");
 			var	loading = document.getElementById("loading");
@@ -308,7 +310,7 @@
 						console.log("ALL LOADED.");
 						hexGL.init();
 						loading.style.display = "none";
-						hexGL.start();
+            hexGL.start();
 					},
 					onError: function(s){
 						console.log("ERROR ON "+s+".");
@@ -319,11 +321,10 @@
 					}
                 });
 
-                bkcore.hexgl.audio.startVehicleEngine();
+                //bkcore.hexgl.audio.startVehicleEngine();
       }
 
-      bkcore.hexgl.audio.startBackground();
-
+      //bkcore.hexgl.audio.startBackground();
       //---------------------------------------------
       // For wireless display mode
       //---------------------------------------------

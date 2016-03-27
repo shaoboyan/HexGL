@@ -24,7 +24,7 @@ bkcore.hexgl.HexGL = function(opts)
 	this.displayHUD = opts.hud == undefined ? true : opts.hud;
 	this.width = opts.width == undefined ? window.innerWidth : opts.width;
 	this.height = opts.height == undefined ? window.innerHeight : opts.height;
-
+  this.controls = null;
 	this.quality = opts.quality == undefined ? 2 : opts.quality;
 	this.difficulty = opts.difficulty == undefined ? 0 : opts.difficulty;
 	this.player = opts.player == undefined ? "Anonym" : opts.player;
@@ -51,6 +51,7 @@ bkcore.hexgl.HexGL = function(opts)
 	this.lib = null;
 	this.materials = {};
 	this.components = {};
+  this.control = null;
 	this.extras = {
 		vignetteColor: new THREE.Color(0x458ab1),
 		bloom: null,
@@ -126,7 +127,7 @@ bkcore.hexgl.HexGL.prototype.update = function()
 	if(this.gameplay != null)
 		this.gameplay.update();
 
-	this.manager.renderCurrent();
+	this.manager.renderCurrent(this.control);
 
     var rate = 1 + this.components.shipControls.getRealSpeedRatio() * 4;
     bkcore.hexgl.audio.powerVehicleEngine(rate);
@@ -135,12 +136,23 @@ bkcore.hexgl.HexGL.prototype.update = function()
 bkcore.hexgl.HexGL.prototype.init = function()
 {
 	this.initHUD();
-
+  
 	this.track.buildMaterials(this.quality, this.mobile);
 
 	this.track.buildScenes(this, this.quality, this.mobile);
 
 	this.initGameComposer();
+  
+  this.initControl();
+}
+
+bkcore.hexgl.HexGL.prototype.initControl = function() {
+
+    this.controls = new THREE.DeviceOrientationControls(THREE.EffectComposer.camera, true);
+    this.controls.connect();
+    this.controls.update();
+
+
 }
 
 bkcore.hexgl.HexGL.prototype.load = function(opts)

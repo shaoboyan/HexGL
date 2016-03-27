@@ -423,6 +423,7 @@ bkcore.hexgl.tracks.Cityscape = {
 			this.objects.components.cameraChase.cameraCube.rotation.copy(c.rotation);*/
 
 			this.objects.composers.game.render(dt);
+      //this.objects.controls.update(dt)
 			if(this.objects.hud) this.objects.hud.update(
 				this.objects.components.shipControls.getRealSpeed(100), 
 				this.objects.components.shipControls.getRealSpeedRatio(), 
@@ -441,7 +442,8 @@ bkcore.hexgl.tracks.Cityscape = {
 			quality: quality,
 			hud: ctx.hud,
 			time: 0.0,
-			lowFPS: 0
+			lowFPS: 0,
+      //controls: ctx.controls,
 		});
 	}
 }

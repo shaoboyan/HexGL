@@ -112,14 +112,14 @@ bkcore.threejs.RenderManager.prototype.remove = function(id)
 	}
 };
 
-bkcore.threejs.RenderManager.prototype.renderCurrent = function()
+bkcore.threejs.RenderManager.prototype.renderCurrent = function(control)
 {
 	if(this.current && this.current.render)
 	{
 		var now = window.perfNow();
 		var delta = now - this.time;
 		this.time = now;
-
+    control.update(delta / 16.6);
 		this.current.render.call(this.current, delta, this.renderer);
 	}
 	else console.warn('RenderManager: No current render defined.');
