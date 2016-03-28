@@ -152,12 +152,8 @@ THREE.EffectComposer.prototype = {
 THREE.EffectComposer.initWidth = window.innerWidth || 1;
 THREE.EffectComposer.initHeight = window.innerHeight || 1;
 
-THREE.EffectComposer.camera = new THREE.PerspectiveCamera( 90 ,THREE.EffectComposer.initWidth / THREE.EffectComposer.initHeight, 0.001, 700) ;
-THREE.EffectComposer.camera.position.z = 350;
-THREE.EffectComposer.cameraL = new THREE.PerspectiveCamera( 75 ,THREE.EffectComposer.initWidth / THREE.EffectComposer.initHeight, 1, 10000) ;
-THREE.EffectComposer.cameraL.position.z = 450;
-THREE.EffectComposer.cameraR = new THREE.PerspectiveCamera( 75 ,THREE.EffectComposer.initWidth / THREE.EffectComposer.initHeight, 1, 10000) ;
-THREE.EffectComposer.cameraR.position.z = 450;
+THREE.EffectComposer.camera = new THREE.PerspectiveCamera( 90 ,window.innerWidth / window.innerHeight, 1, 10000) ;
+THREE.EffectComposer.camera.position.z = 50;
 
 //THREE.EffectComposer.camera = new THREE.OrthographicCamera( THREE.EffectComposer.initWidth / - 2, THREE.EffectComposer.initWidth / 2, THREE.EffectComposer.initHeight / 2, THREE.EffectComposer.initHeight / - 2, -10000, 10000 );
 //THREE.EffectComposer.cameraL = new THREE.OrthographicCamera( THREE.EffectComposer.initWidth / - 2, THREE.EffectComposer.initWidth / 2, THREE.EffectComposer.initHeight / 2, THREE.EffectComposer.initHeight / - 2, -10000, 10000 );

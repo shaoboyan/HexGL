@@ -63,7 +63,7 @@ bkcore.hexgl.HexGL = function(opts)
 
 	this.gameover = opts.gameover == undefined ? null : opts.gameover;
 
-	this.godmode = opts.godmode == undefined ? false : opts.godmode;
+	this.godmode = opts.godmode = true; // == undefined ? false : opts.godmode;
 
 	this.hud = null;
 
@@ -134,7 +134,7 @@ bkcore.hexgl.HexGL.prototype.update = function()
 
 bkcore.hexgl.HexGL.prototype.init = function()
 {
-	this.initHUD();
+	//this.initHUD();
 
 	this.track.buildMaterials(this.quality, this.mobile);
 

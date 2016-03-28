@@ -98,7 +98,7 @@ THREE.ShaderPass.prototype = {
     _cameraL.position.copy( _position );
     _cameraL.quaternion.copy( _quaternion );
     _cameraL.translateX ( -this.separation / 2.0 );
-    _cameraL.position.z = 0;
+    //_cameraL.position.z = 0;
     //_cameraL.rotation.x = this.degToRad(0);
 
     //right
@@ -114,7 +114,7 @@ THREE.ShaderPass.prototype = {
     _cameraR.position.copy( _position );
     _cameraR.quaternion.copy( _quaternion );
     _cameraR.translateX( this.separation / 2.0 );
-    _cameraR.position.z = 0;
+    //_cameraR.position.z = 0;
     
     THREE.EffectComposer.scene.add(_cameraL);
     THREE.EffectComposer.scene.add(_cameraR);

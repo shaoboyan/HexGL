@@ -4,7 +4,8 @@
 		<title>HexGL</title>
 		<meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<link rel="stylesheet" href="css/fonts.css" type="text/css" charset="utf-8">
+    <meta name="screen-orientation" content="landscape">
+    <link rel="stylesheet" href="css/fonts.css" type="text/css" charset="utf-8">
 		<link rel="icon" href="/icon_256.png" type="image/png">
 		<link rel="shortcut icon" href="/icon_256.png" type="image/png">
 		<style>
@@ -137,14 +138,14 @@
 			<div id="titles-logo"><div>HexGL</div></div>
 			<table id="titles-buttons">
 				<tr><td class="titles-button" id="s-quality" onclick="rollQuality();">QUALITY: ULTRA</td></tr>
-				<tr><td class="titles-button" id="s-controls" onclick="rollControls();">CONTROLS: MOTION</td></tr>
+				<tr><td class="titles-button" id="s-controls" onclick="rollControls();">CONTROLS: GAMEPAD</td></tr>
 				<tr style="display:none;" id="remote-display-row"><td class="titles-button" id="s-remote-display" onclick="rollRemoteDisplay();">REMOTE DISPLAY: ON</td></tr>
 				<tr><td class="titles-button" onclick="init();">START</td></tr>
 			</table>
 		</div>
-		<div id="controls-1" onclick="start();"></div>
-		<div id="controls-2" onclick="start();"></div>
-		<div id="controls-3" onclick="start();"></div>
+    <div id="controls-1" onclick="start();"></div>
+    <!--<div id="controls-2" onclick="start();"></div>-->
+    <!--<div id="controls-3" onclick="start();"></div>-->
 		<div id="over" onclick="restart();"></div>
 		<div id="loading"><div>Loading...</div></div>
 		<div id="overlay"></div>
@@ -221,20 +222,36 @@
 
 			var hexGL;
 
-			var q = 2/*ULTRA*/, qmax = 2, c = 2 /*MOTION*/, cmax = 3;
+			var q = 2/*ULTRA*/, qmax = 2, c = 1 /*MOTION*/, cmax = 1;
 			var sq = ['SD', 'HD', 'ULTRA'];
-			var sc = ['NONE', 'TOUCH', 'MOTION', 'GAMEPAD'];
-
+			//var sc = ['NONE', 'TOUCH', 'MOTION', 'GAMEPAD'];
+      var sc = ['NONE', 'GAMEPAD']
 			var	titles = document.getElementById("titles")
 			var	hudcontainer = document.getElementById("overlay");
 			var	gameover = document.getElementById("over");
 			var	controls1 = document.getElementById("controls-1");
-			var	controls2 = document.getElementById("controls-2");
-			var	controls3 = document.getElementById("controls-1");
+			//var	controls2 = document.getElementById("controls-2");
+			//var	controls3 = document.getElementById("controls-1");
 			var	squality = document.getElementById("s-quality");
 			var	scontrols = document.getElementById("s-controls");
 			var	loading = document.getElementById("loading");
-			var	container = document.getElementById("main");
+      var	container = document.getElementById("main");
+      var innerWidthTmp = window.innerWidth;
+      function screenOrientationListener() {
+        try {
+          var iw = window.innerWidth;
+          if (iw != innerWidthTmp) {
+            if(iw>window.innerHeight) orientation = 90;
+            else orientation = 0;
+            screenOrientationEvent();
+            innerWidthTmp = iw;
+          }
+        } catch(e) {
+        }
+
+        setTimeout("screenOrientationListener", 500);
+      }
+      screenOrientationListener();
 
 			function rollQuality() {
 				q++;
@@ -279,8 +296,8 @@
         }
 
 				controls1.style.display = "none";
-				controls2.style.display = "none";
-				controls3.style.display = "none";
+				//controls2.style.display = "none";
+				//controls3.style.display = "none";
 				container.style.display = "block";
 				loading.style.display = "block";
 
