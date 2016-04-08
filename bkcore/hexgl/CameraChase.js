@@ -7,7 +7,10 @@
 
 var bkcore = bkcore || {};
 bkcore.hexgl = bkcore.hexgl || {};
-
+var deviceOrientation = {};
+function onDeviceOrientationChangeEvent(evt) {
+  deviceOrientation = evt;
+}
 bkcore.hexgl.CameraChase = function(opts)
 {
 	this.dir = new THREE.Vector3(0,0,1);
@@ -16,10 +19,14 @@ bkcore.hexgl.CameraChase = function(opts)
 	this.speedOffset = 0;
 	this.speedOffsetMax = 10;
 	this.speedOffsetStep = 0.05;
+  this.distance = 1;
+  this.deviceOrientation = {};
+  window.addEventListener('deviceorientation', onDeviceOrientationChangeEvent, false);
 
 	this.modes = {
 		CHASE: 0,
-		ORBIT: 1
+		ORBIT: 1,
+    VR : 2,
 	}
 	this.mode = this.modes.CHASE;
 
@@ -33,6 +40,10 @@ bkcore.hexgl.CameraChase = function(opts)
 	this.orbitOffset = 12;
 	this.lerp = opts.lerp == undefined ? 0.5 : opts.lerp;
 	this.time = 0.0;
+  this.focalPoint = this.targetObject.position;
+  //this.device_control = new THREE.DeviceOrientationControls(this.camera, true);
+  //this.device_control.connect();
+  //this.device_control.update();
 }
 
 bkcore.hexgl.CameraChase.prototype.update = function(dt, ratio)
@@ -52,9 +63,15 @@ bkcore.hexgl.CameraChase.prototype.update = function(dt, ratio)
 		this.target.addSelf(this.up.multiplyScalar(this.yoffset));
 		this.target.y += -this.up.y + this.yoffset;
 		this.camera.position.copy(this.target);
-		
-		this.camera.lookAt(this.dir.normalize().multiplyScalar(this.viewOffset).addSelf(this.targetObject.position));
-	}
+    if (deviceOrientation.alpha != undefined) {
+      this.focalPoint.x = this.distance * Math.cos(deviceOrientation.beta);
+      this.focalPoint.y = this.distance * Math.cos(deviceOrientation.gamma);
+      this.focalPoint.z = this.distance * Math.cos(deviceOrientation.alpha);
+    }
+    //this.device_control.update(dt);
+		//this.camera.lookAt(this.dir.normalize().multiplyScalar(this.viewOffset).addSelf(this.targetObject.position));
+	  this.camera.lookAt(this.dir.normalize().multiplyScalar(this.viewOffset).addSelf(this.focalPoint));
+  }
 	else if(this.mode == this.modes.ORBIT)
 	{
 		this.time += dt*.008;

@@ -38,7 +38,7 @@ bkcore.hexgl.HexGL = function(opts)
 	this.controlType = opts.controlType == undefined ? 1 : opts.controlType;
 
 	this.controllerWindow = opts.controllerWindow == undefined ? null : opts.controllerWindow;
-  this.control_device;
+  //this.control_device;
 	if(this.half)
 	{
 		this.width /= 2;
@@ -76,9 +76,9 @@ bkcore.hexgl.HexGL = function(opts)
 	this.initRenderer();
 
   //For deviceOrientation control
-  this.control_device = new THREE.DeviceOrientationControls(THREE.EffectComposer.camera, true);
-  this.control_device.connect();
-  this.control_device.update();
+  //this.control_device = new THREE.DeviceOrientationControls(this.components.cameraChase, true);
+  //this.control_device.connect();
+  //this.control_device.update();
 
 	function onKeyPress(event) 
 	{
@@ -108,7 +108,11 @@ bkcore.hexgl.HexGL.prototype.start = function()
 		raf();
 
 	this.initGameplay();
-    bkcore.hexgl.audio.startCountdown();
+  //this.control_device = new THREE.DeviceOrientationControls(this.components.cameraChase, true);
+  //this.control_device.connect();
+  //this.control_device.update();
+
+  bkcore.hexgl.audio.startCountdown();
 }
 
 bkcore.hexgl.HexGL.prototype.reset = function()
@@ -133,7 +137,7 @@ bkcore.hexgl.HexGL.prototype.update = function()
 
 	this.manager.renderCurrent();
   
-  this.control_device.update(window.perfNow() - this.manager.time);
+  //this.control_device.update(window.perfNow() - this.manager.time);
 
     var rate = 1 + this.components.shipControls.getRealSpeedRatio() * 4;
     bkcore.hexgl.audio.powerVehicleEngine(rate);
